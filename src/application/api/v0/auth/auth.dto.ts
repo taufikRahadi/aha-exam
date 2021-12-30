@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
+  IsJWT,
   IsNotEmpty,
   IsString,
   Matches,
@@ -109,4 +110,31 @@ export class RequestEmailVerificationLinkDto {
     example: 'user@mail.com',
   })
   email: string;
+}
+
+export class GoogleLoginDto {
+  @ApiProperty({
+    type: String,
+    description: 'ID Token from google auth',
+  })
+  @IsNotEmpty()
+  @IsJWT()
+  idToken: string;
+}
+
+export class VerifyEmailDto {
+  @IsJWT()
+  @IsNotEmpty()
+  @ApiProperty({
+    type: String,
+    description: 'Token from the email link',
+  })
+  token: string;
+}
+
+export class StatusDto {
+  @ApiProperty({
+    type: Boolean,
+  })
+  status: boolean;
 }
