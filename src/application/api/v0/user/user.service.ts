@@ -10,6 +10,23 @@ export class UserService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
 
+  async update(id: string, payload: any) {
+    try {
+      await this.userModel.updateOne(
+        {
+          _id: id,
+        },
+        payload,
+      );
+
+      return await this.userModel.findOne({
+        _id: id,
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async findUserByEmail(email: string, withPassword = true) {
     try {
       const select = withPassword ? '' : '-password';
@@ -28,7 +45,7 @@ export class UserService {
     }
   }
 
-  async comparePassword(password: string, hashedPassword: string) {
+  comparePassword(password: string, hashedPassword: string) {
     const compare = compareSync(password, hashedPassword);
     if (!compare) throw new BadRequestException(`Wrong password`);
 
@@ -37,10 +54,14 @@ export class UserService {
 
   async createUser(payload: User) {
     try {
-      payload.password = hashSync(payload.password, genSaltSync(12));
+      payload.password = this.hashPassword(payload.password);
       const user = await this.userModel.create(payload);
 
       return user;
     } catch (error) {}
+  }
+
+  hashPassword(password: string) {
+    return hashSync(password, genSaltSync(12));
   }
 }
