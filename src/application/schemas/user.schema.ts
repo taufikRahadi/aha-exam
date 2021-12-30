@@ -50,6 +50,13 @@ export class User {
   createdAt?: Date;
 
   @Prop({
+    type: String,
+    required: false,
+    default: 'email-password',
+  })
+  signUpMethod?: string;
+
+  @Prop({
     type: Date,
     required: false,
   })
