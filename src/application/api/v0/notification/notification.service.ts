@@ -29,7 +29,9 @@ export class NotificationService {
         template: './verification.hbs',
         context: {
           name: payload.name,
-          url: `http://localhost:8080/${token}`,
+          url: `${this.configService.get<string>(
+            'FRONTEND_URL',
+          )}/auth/email-verification/${token}`,
         },
       });
 
