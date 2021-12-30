@@ -2,10 +2,13 @@ import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { User } from 'src/application/schemas/user.schema';
 import {
+  GoogleLoginDto,
   RequestEmailVerificationLinkDto,
   SignInResponseDto,
   SignInUserDto,
   SignUpUserDto,
+  StatusDto,
+  VerifyEmailDto,
 } from './auth.dto';
 import { AuthService } from './auth.service';
 
@@ -27,6 +30,17 @@ export class AuthController {
     return this.authService.signUpUser(payload);
   }
 
+  @Post('/google')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'google login success, returns access token',
+    type: SignInResponseDto,
+  })
+  async googleLogin(@Body() { idToken }: GoogleLoginDto) {
+    return this.authService.googleLogin(idToken);
+  }
+
   @Post()
   @HttpCode(HttpStatus.OK)
   @ApiResponse({
@@ -40,6 +54,21 @@ export class AuthController {
   })
   async signIn(@Body() payload: SignInUserDto): Promise<SignInResponseDto> {
     return this.authService.signInUser(payload);
+  }
+
+  @Post('/verify')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'account verified',
+    type: StatusDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    description: 'Invalid Token Link',
+  })
+  async verifyEmail(@Body() { token }: VerifyEmailDto) {
+    return this.authService.verifyEmail(token);
   }
 
   @Post('/email-verification')
