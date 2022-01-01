@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Logger,
+  UnprocessableEntityException,
   ValidationError,
   ValidationPipe,
 } from '@nestjs/common';
@@ -26,7 +27,7 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       exceptionFactory: (errors: ValidationError[]) => {
-        throw new BadRequestException(errors);
+        throw new UnprocessableEntityException(errors);
       },
     }),
   );

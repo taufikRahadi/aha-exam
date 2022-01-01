@@ -126,6 +126,8 @@ export class AuthService {
         );
       else if (!Boolean(user.emailVerifiedAt))
         throw new BadRequestException('User Account Not Verified');
+      else if (user.signUpMethod !== 'email-password')
+        throw new BadRequestException('Please Login With Your Google Account');
 
       this.userService.comparePassword(payload.password, user.password);
 

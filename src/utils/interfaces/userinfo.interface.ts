@@ -1,5 +1,5 @@
 export class Userinfo {
-  _id: string;
+  userId: string;
   fullname: string;
   email: string;
   emailVerified: boolean;
