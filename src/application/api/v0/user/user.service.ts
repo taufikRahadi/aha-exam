@@ -10,6 +10,16 @@ export class UserService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
 
+  async checkEmailVerified(_id: string): Promise<boolean> {
+    try {
+      const user = await this.findUserById(_id);
+
+      return Boolean(user.emailVerifiedAt);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async update(id: string, payload: any) {
     try {
       await this.userModel.updateOne(
@@ -27,6 +37,16 @@ export class UserService {
     }
   }
 
+  async findUserById(_id: string) {
+    try {
+      const user = await this.userModel.findById(_id);
+
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async findUserByEmail(email: string, withPassword = true) {
     try {
       const select = withPassword ? '' : '-password';
@@ -36,8 +56,6 @@ export class UserService {
           email,
         })
         .select([select]);
-
-      console.log(user);
 
       return user;
     } catch (err) {
