@@ -11,6 +11,7 @@ import { AuthGuard } from 'src/application/middlewares/guards/auth.guard';
 import { User } from 'src/application/schemas/user.schema';
 import { Userinfo } from 'src/utils/decorators/userinfo.decorator';
 import { Userinfo as UserinfoType } from 'src/utils/interfaces/userinfo.interface';
+import { StatusDto } from '../auth/auth.dto';
 import { ChangePasswordDto, UpdateProfileDto } from './user.dto';
 import { UserService } from './user.service';
 
@@ -23,6 +24,7 @@ export class UserController {
   @ApiBearerAuth()
   @ApiResponse({
     status: HttpStatus.OK,
+    type: StatusDto,
   })
   async updateProfile(
     @Body() payload: UpdateProfileDto,
@@ -35,6 +37,11 @@ export class UserController {
   @Put('/reset-password')
   @UseGuards(AuthGuard)
   @ApiBearerAuth()
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'user success change password',
+    type: StatusDto,
+  })
   async resetPassword(
     @Body() { password }: ChangePasswordDto,
     @Userinfo() { userId }: UserinfoType,
