@@ -46,7 +46,6 @@ export class UserController {
     @Body() { password }: ChangePasswordDto,
     @Userinfo() { userId }: UserinfoType,
   ) {
-    password = this.userService.hashPassword(password);
     await this.userService.update(userId, {
       password: password,
     });

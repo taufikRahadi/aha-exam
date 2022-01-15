@@ -1,18 +1,18 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { User, UserDocument } from 'src/application/schemas/user.schema';
-import { hashSync, genSaltSync, compareSync } from 'bcrypt';
+import { User } from '../../../entities/user.entity';
+import { compareSync } from 'bcrypt';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectRepository(User) private readonly userRepo: Repository<User>,
   ) {}
 
-  async checkEmailVerified(_id: string): Promise<boolean> {
+  async checkEmailVerified(id: string): Promise<boolean> {
     try {
-      const user = await this.findUserById(_id);
+      const user = await this.findUserById(id);
 
       return Boolean(user.emailVerifiedAt);
     } catch (error) {
@@ -22,24 +22,17 @@ export class UserService {
 
   async update(id: string, payload: any) {
     try {
-      await this.userModel.updateOne(
-        {
-          _id: id,
-        },
-        payload,
-      );
+      await this.userRepo.update(id, payload);
 
-      return await this.userModel.findOne({
-        _id: id,
-      });
+      return await this.userRepo.findOne(id);
     } catch (error) {
       throw error;
     }
   }
 
-  async findUserById(_id: string) {
+  async findUserById(id: string) {
     try {
-      const user = await this.userModel.findById(_id);
+      const user = await this.userRepo.findOne(id);
 
       return user;
     } catch (error) {
@@ -49,13 +42,24 @@ export class UserService {
 
   async findUserByEmail(email: string, withPassword = true) {
     try {
-      const select = withPassword ? '' : '-password';
+      const selectAttr: (keyof User)[] = [
+        'id',
+        'email',
+        'fullname',
+        'emailVerifiedAt',
+        'signUpMethod',
+        'createdAt',
+        'updatedAt',
+      ];
 
-      const user = await this.userModel
-        .findOne({
+      withPassword ? selectAttr.push('password') : selectAttr;
+
+      const user = await this.userRepo.findOne({
+        where: {
           email,
-        })
-        .select([select]);
+        },
+        select: selectAttr,
+      });
 
       return user;
     } catch (err) {
@@ -72,14 +76,9 @@ export class UserService {
 
   async createUser(payload: User) {
     try {
-      payload.password = this.hashPassword(payload.password);
-      const user = await this.userModel.create(payload);
+      const user = await this.userRepo.save(payload);
 
       return user;
     } catch (error) {}
-  }
-
-  hashPassword(password: string) {
-    return hashSync(password, genSaltSync(12));
   }
 }

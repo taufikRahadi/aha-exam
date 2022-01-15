@@ -60,14 +60,12 @@ export class AuthService {
           fullname: userData.name,
           signUpMethod: 'google-auth',
           emailVerifiedAt: new Date(),
-          password: this.userService.hashPassword(
-            `${userData.email}-(google-auth)`,
-          ),
+          password: `${userData.email}-(google-auth)`,
         });
 
         const token = sign(
           {
-            userId: newUser._id,
+            userId: newUser.id,
             fullname: newUser.fullname,
             email: newUser.email,
             emailVerified: Boolean(newUser.emailVerifiedAt),
@@ -93,7 +91,7 @@ export class AuthService {
 
         const token = sign(
           {
-            userId: user._id,
+            userId: user.id,
             fullname: user.fullname,
             email: user.email,
             emailVerified: Boolean(user.emailVerifiedAt),
@@ -133,7 +131,7 @@ export class AuthService {
 
       const token = sign(
         {
-          userId: user._id,
+          userId: user.id,
           fullname: user.fullname,
           email: user.email,
           emailVerified: Boolean(user.emailVerifiedAt),
@@ -161,7 +159,7 @@ export class AuthService {
       if (!verifyToken) throw new UnprocessableEntityException(`Invalid Link`);
 
       const user = await this.userService.findUserByEmail(verifyToken.email);
-      await this.userService.update(user._id, {
+      await this.userService.update(user.id, {
         emailVerifiedAt: new Date(),
       });
 
