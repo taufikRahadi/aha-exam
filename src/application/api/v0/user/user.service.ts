@@ -78,8 +78,6 @@ export class UserService {
     try {
       const user = await this.userRepo.save(this.userRepo.create(payload));
 
-      console.log(user);
-
       return user;
     } catch (error) {
       throw error;
