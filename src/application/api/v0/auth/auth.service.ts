@@ -62,6 +62,7 @@ export class AuthService {
           emailVerifiedAt: new Date(),
           password: `${userData.email}-(google-auth)`,
         });
+        console.log(newUser);
 
         const token = sign(
           {

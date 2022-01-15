@@ -45,7 +45,7 @@ export class User {
 
   @Column({
     type: 'enum',
-    enum: ['email-password', 'google-oauth'],
+    enum: ['email-password', 'google-auth'],
     default: 'email-password',
   })
   @ApiProperty({
